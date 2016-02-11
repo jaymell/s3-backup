@@ -1,0 +1,2 @@
+[destination]
+s3_bucket=s3://my-bucket-name
