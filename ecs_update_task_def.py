@@ -13,7 +13,7 @@ containerDefinitions:
   memory: 512
   cpu: 512
   environment:
-  - { name: "USE_S3", value: "True" }
+  - { name: "USE_S3", value: "true" }
 - name: nginx
   image: 799617403160.dkr.ecr.us-east-1.amazonaws.com/pm-nginx:latest
   memory: 256
