@@ -10,7 +10,7 @@ family: photo_mapper
 containerDefinitions:
 - name: pm-flask
   image: 799617403160.dkr.ecr.us-east-1.amazonaws.com/pm-flask-2:%s
-  memory: 768
+  memory: 512
   cpu: 512
 - name: nginx
   image: 799617403160.dkr.ecr.us-east-1.amazonaws.com/pm-nginx:latest
