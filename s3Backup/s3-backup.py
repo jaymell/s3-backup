@@ -31,8 +31,10 @@ except Exception as e:
 # add destination to s3 bucket url if specified:
 if args.dest:
 	s3Dest += args.dest 
+
 # make sure s3 knows the destination is a directory:
-if s3Dest[-1] != '/': s3Dest += '/'
+### DELETEME
+#if s3Dest[-1] != '/': s3Dest += '/'
 
 # it would be cool to do this in multiple threads:
 for source in args.source_list: 
