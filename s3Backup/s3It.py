@@ -7,6 +7,11 @@ import os
 import subprocess
 import shlex
 
+#syntax: 
+## old: python s3It.py FILE 's3://<bucket-name>' <-- no special URL in bucket-name
+## boto3: python s3It.py FILE <bucket-name> <-- no special URL in bucket-name, but
+##	this has only been tested with us-east-1 buckets
+
 def olds3It(source, dest, isDir=False):
         """ source is file by default, possibly directory;
                 torage-class STANDARD_IAestination is the bucket URL """
