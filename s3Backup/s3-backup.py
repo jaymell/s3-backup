@@ -17,7 +17,7 @@ argparser.add_argument("-d", "--dest", action="store", help="destination s3 fold
 argparser.add_argument("source_list", nargs="+")
 args = argparser.parse_args()
 
-tarDest = '/home/backup/stage'
+tarDest = '/tmp'
 config = './s3.cfg'
 parser = ConfigParser.SafeConfigParser()
 
