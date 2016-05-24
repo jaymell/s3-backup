@@ -32,10 +32,6 @@ except Exception as e:
 if args.dest:
 	s3Dest += args.dest 
 
-# make sure s3 knows the destination is a directory:
-### DELETEME
-#if s3Dest[-1] != '/': s3Dest += '/'
-
 # it would be cool to do this in multiple threads:
 for source in args.source_list: 
 
