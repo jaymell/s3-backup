@@ -14,13 +14,15 @@ bucket name """
 
 argparser = argparse.ArgumentParser(description='Backup directories to s3')
 argparser.add_argument("-d", "--dest", action="store", help="destination s3 folder")
+argparser.add_argument("-e", "--exclude", nargs="+", default=[], help="path(s) to exclude")
 argparser.add_argument("source_list", nargs="+")
 args = argparser.parse_args()
 
 tarDest = '/tmp'
 config = './s3.cfg'
 parser = ConfigParser.SafeConfigParser()
-
+excludes = args.exclude
+print("excludes: %s" % excludes)
 try:
 	parser.read(config)
 	s3Dest = parser.get('destination', 's3_bucket')
@@ -38,7 +40,7 @@ for source in args.source_list:
 	now = datetime.datetime.now()
 	print('Beginning backup of %s: %s' % (source, now))
 	try:
-		tarFile = tarIt.tarIt(source, tarDest)
+		tarFile = tarIt.tarIt(source, tarDest, excludes)
 	except Exception as e:
 		print('Failed to create archive: %s' % e)
 		sys.exit(3)
