@@ -38,7 +38,7 @@ def s3It(source, dest):
 
 	if os.path.isfile(source):
 		_source = os.path.basename(source)
-		s3.Object(dest, _source).put(Body=open(source, 'rb'))
+		s3.Object(dest, _source).put(Body=open(source, 'rb'), StorageClass='STANDARD_IA')
 	elif os.path.isdir(source):
 		print("Havent actually implemented this yet... come back soon!")
 		sys.exit()

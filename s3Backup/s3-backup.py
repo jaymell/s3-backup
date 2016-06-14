@@ -38,6 +38,11 @@ if args.dest:
 for source in args.source_list: 
 
 	now = datetime.datetime.now()
+
+        # convert paths to absolute:
+        source = os.path.abspath(source)
+        if excludes: excludes  = [ os.path.abspath(i) for i in excludes ]
+
 	print('Beginning backup of %s: %s' % (source, now))
 	try:
 		tarFile = tarIt.tarIt(source, tarDest, excludes)
