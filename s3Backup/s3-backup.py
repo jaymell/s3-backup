@@ -18,7 +18,7 @@ argparser.add_argument("-e", "--exclude", nargs="+", default=[], help="path(s) t
 argparser.add_argument("source_list", nargs="+")
 args = argparser.parse_args()
 
-tarDest = '/tmp'
+tarDest = './'
 config = './s3.cfg'
 parser = ConfigParser.SafeConfigParser()
 excludes = args.exclude
