@@ -1,3 +1,4 @@
+from __future__ import print_function
 import tarfile
 import sys
 import os
@@ -13,6 +14,15 @@ def isMatch(f, excludes):
         if match: break
     return match
     
+
+def can_read(f):
+   """ to prevent failure but still print file name if reads fail """
+   if not os.access(f, os.R_OK):
+     print("Failed adding %s -- permission denied" % f, file=sys.stderr)
+     return False
+
+   return True
+
 def tarIt(source, destDir, excludes=[]):
 	""" take directory, tar it, put it in destination
 		folder, file name generated from directory, replacing
@@ -26,7 +36,8 @@ def tarIt(source, destDir, excludes=[]):
         )
 	out = tarfile.open(destFile, 'w:gz')
         if excludes:
-            out.add(source, recursive=True, exclude = lambda x: True if isMatch(x, excludes) else False)
+            # exclude if we told it to exclude it or
+            out.add(source, recursive=True, exclude = lambda x: True if (isMatch(x, excludes) or not can_read(x)) else False)
         else:
             out.add(source, recursive=True)
         

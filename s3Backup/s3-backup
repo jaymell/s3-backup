@@ -13,13 +13,14 @@ user running this script  -- above config file is just for
 bucket name """
 
 argparser = argparse.ArgumentParser(description='Backup directories to s3')
-argparser.add_argument("-d", "--dest", action="store", help="destination s3 folder")
+argparser.add_argument("-d", "--dest", default="./s3.cfg", action="store", help="destination s3 folder")
+argparser.add_argument("-c", "--config", action="store", help="config file")
 argparser.add_argument("-e", "--exclude", nargs="+", default=[], help="path(s) to exclude")
 argparser.add_argument("source_list", nargs="+")
 args = argparser.parse_args()
 
-tarDest = './'
-config = './s3.cfg'
+tarDest = './' # not ideal, but avoids filling up /tmp with large archives
+config = args.config
 parser = ConfigParser.SafeConfigParser()
 excludes = args.exclude
 print("excludes: %s" % excludes)
