@@ -16,7 +16,7 @@ def isMatch(f, excludes):
     
 
 def can_read(f):
-   """ to prevent failure but still print file name if reads fail """
+   """ return False and print file name to stderr if can't read """
    if not os.access(f, os.R_OK):
      print("Failed adding %s -- permission denied" % f, file=sys.stderr)
      return False
