@@ -14,7 +14,7 @@ bucket name """
 
 argparser = argparse.ArgumentParser(description='Backup directories to s3')
 argparser.add_argument("-d", "--dest", action="store", help="destination s3 folder")
-argparser.add_argument("-c", "--config", default=os.path.expanduser('~') + ".s3-backup.cfg", action="store", help="config file")
+argparser.add_argument("-c", "--config", default=os.path.expanduser('~') + "/.s3-backup.cfg", action="store", help="config file")
 argparser.add_argument("-e", "--exclude", nargs="+", default=[], help="path(s) to exclude")
 argparser.add_argument("source_list", nargs="+")
 args = argparser.parse_args()
@@ -25,6 +25,7 @@ parser = ConfigParser.SafeConfigParser()
 excludes = args.exclude
 print("excludes: %s" % excludes)
 try:
+        print("config is %s" % config)
 	parser.read(config)
 	s3Dest = parser.get('destination', 's3_bucket')
 except Exception as e:
