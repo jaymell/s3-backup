@@ -41,9 +41,10 @@ def s3It(source, bucket):
   if os.path.isfile(source):
     _source = os.path.basename(source)
     try:
-      transfer.upload_file(source, bucket, _source) 
+      transfer.upload_file(source, bucket, _source, extra_args={'StorageClass': 'STANDARD_IA'}) 
     except Exception as e:
       print("Upload of %s failed: %s" % (source, e))
+      raise e
   elif os.path.isdir(source):
     print("Havent actually implemented this yet... come back soon!")
     sys.exit(2)
