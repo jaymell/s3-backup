@@ -10,7 +10,7 @@ import re
 def isMatch(f, excludes):
     match = False
     for i in excludes:
-        match = re.match('^%s.*' % os.path.realpath(i), os.path.realpath(f))
+        match = re.match('^%s.*' % i, f)
         if match: break
     return match
     
@@ -23,7 +23,7 @@ def can_read(f):
 
    return True
 
-def tarIt(source, destDir, excludes=[]):
+def TarIt(source, destDir, excludes=[]):
 	""" take directory, tar it, put it in destination
 		folder, file name generated from directory, replacing
 		special characters with underscores; one success,
