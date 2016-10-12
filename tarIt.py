@@ -5,23 +5,7 @@ import os
 import datetime
 import sys
 import socket
-import re
-
-def isMatch(f, excludes):
-    match = False
-    for i in excludes:
-        match = re.match('^%s.*' % i, f)
-        if match: break
-    return match
-    
-
-def can_read(f):
-   """ return False and print file name to stderr if can't read """
-   if not os.access(f, os.R_OK):
-     print("Failed adding %s -- permission denied" % f, file=sys.stderr)
-     return False
-
-   return True
+import utils
 
 def TarIt(source, destDir, excludes=[]):
 	""" take directory, tar it, put it in destination
@@ -37,7 +21,7 @@ def TarIt(source, destDir, excludes=[]):
 	out = tarfile.open(destFile, 'w:gz')
         if excludes:
             # exclude if we told it to exclude it or
-            out.add(source, recursive=True, exclude = lambda x: True if (isMatch(x, excludes) or not can_read(x)) else False)
+            out.add(source, recursive=True, exclude = lambda x: True if (utils.is_match(x, excludes) or not utils.can_read(x)) else False)
         else:
             out.add(source, recursive=True)
         

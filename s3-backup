@@ -1,43 +1,75 @@
 #!/usr/bin/env python
 
 import ConfigParser
+import argparse
 import sys
 import os
+import datetime
 import tarIt
 import s3It
-import datetime
-import argparse
+import utils
 
-def get_excludes(excludes):
-  """ clean up excluded paths """
+tarDest = './' # not ideal, but avoids filling up /tmp with large archives
 
-  excludes = [ os.path.expanduser(i) for i in excludes ]
-  return excludes
+def process_source(source, dest, excludes):
+  """ call backup of individual source 
+  """
+  now = datetime.datetime.now()
+  print('Beginning backup of %s: %s' % (source, now))
+  try:
+    tarFile = tarIt.TarIt(source, tarDest, excludes)
+  except Exception as e:
+    print('Failed to create archive: %s' % e)
+    sys.exit(3)
+
+  now = datetime.datetime.now()
+  print('Beginning s3 sync of %s: %s' % (tarFile, now))
+  try:
+    s3It.s3It(tarFile, dest)
+  except Exception as e:
+    print('Failed to send %s to s3: %s' % (tarFile, e))
+  else:
+    now = datetime.datetime.now()
+    print("Success: Archive %s created and sent to s3 at %s" % (tarFile, now))
+
+  try:
+    os.remove(tarFile)
+  except Exception as e:
+    print('Failed to delete local copy of archive: %s' % e)
+
 
 def main():
   argparser = argparse.ArgumentParser(description='Backup directories to s3')
   argparser.add_argument("-d", "--dest", action="store", help="destination s3 folder")
   argparser.add_argument("-c", "--config", default=os.path.expanduser('~') + "/.s3-backup.cfg", action="store", help="config file")
-  argparser.add_argument("-e", "--exclude", nargs="+", default=[], help="path(s) to exclude")
+  argparser.add_argument("-e", "--exclude", action='append', help="path(s) to exclude")
   argparser.add_argument("-", "--verbose", action='store_true', default=False)
   argparser.add_argument("source_list", nargs="+")
   args = argparser.parse_args()
   
-  tarDest = './' # not ideal, but avoids filling up /tmp with large archives
   config = args.config
   parser = ConfigParser.SafeConfigParser()
   excludes = args.exclude
+  sources = args.source_list
   # not currently used since tar module doesn't offer option
   # to print individual file names in recursive add:
   verbose = args.verbose
   
+  # FIXME: break the config and cli parsing into separate func
+  # and have a means of making config accessible to various funcs
   try:
-    excludes = get_excludes(excludes)
+    sources = utils.clean_paths(sources)
+  except Exception as e:
+    print("Unable to parse source list -- exiting: %s" % e)
+    sys.exit(1)
+
+  try:
+    if excludes is not None and len(excludes) != 0:
+      excludes = utils.clean_paths(excludes)
   except Exception as e:
     print("Unable to parse excluded paths -- exiting: %s" % e)
     sys.exit(1)
-  
-  if excludes:
+  else: 
     print("excludes: %s" % excludes)
   
   try:
@@ -51,38 +83,15 @@ def main():
   # add destination to s3 bucket url if specified:
   if args.dest:
     s3Dest += args.dest 
-  
-  # it would be cool to do this in multiple threads:
-  for source in args.source_list: 
-    now = datetime.datetime.now()
-    # convert paths to absolute:
-    source = os.path.abspath(source)
-    if excludes: excludes  = [ os.path.abspath(i) for i in excludes ]
-  
-    print('Beginning backup of %s: %s' % (source, now))
-    try:
-      tarFile = tarIt.TarIt(source, tarDest, excludes)
-    except Exception as e:
-      print('Failed to create archive: %s' % e)
-      sys.exit(3)
-  
-    now = datetime.datetime.now()
-    print('Beginning s3 sync of %s: %s' % (tarFile, now))
-    try:
-      s3It.s3It(tarFile, s3Dest)
-    except Exception as e:
-      print('Failed to send %s to s3: %s' % (tarFile, e)) 
-    else:
-      now = datetime.datetime.now()
-      print("Success: Archive %s created and sent to s3 at %s" % (tarFile, now))
-  
-    try:
-      os.remove(tarFile)
-    except Exception as e:
-      print('Failed to delete local copy of archive: %s' % e)
-      
-    now = datetime.datetime.now()
-    print('Completed at %s' % now)
+
+  if len(sources) == 0:
+    print("No sources to back up! Exiting.")
+    sys.exit(1)
+
+  for source in sources:
+    process_source(source, s3Dest, excludes)
+
+  print('Completed at %s' % datetime.datetime.now())
   
 if __name__ == '__main__':
   main()
